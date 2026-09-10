@@ -14,7 +14,7 @@ Users → Search → Answer = 😫
 
 A **local, intelligent Q&A system** using:
 
-- **RAG**: Semantic search over documentation
+- **RAG**: Hybrid FAISS semantic and BM25 full-text search over documentation
 - **MCP**: Dynamic document access
 - **Local LLM**: Privacy-preserving answers (Ollama)
 
@@ -98,10 +98,13 @@ search_documents(query)
 ```
 Language:      Python 3.10+
 Vector DB:     FAISS
+Full-text:     BM25 (`rank-bm25`)
 Embeddings:    SentenceTransformers
 LLM:           Ollama (local)
 MCP:           FastMCP
 ```
+
+Install dependencies from `src/requirements.txt`, including `rank-bm25>=0.2.2` for BM25 retrieval.
 
 # 📁 Project Structure
 
@@ -115,6 +118,8 @@ src/
 │   ├── chunk.py       Split text
 │   ├── embed.py       Generate embeddings
 │   ├── build_index.py Build FAISS index
+│   ├── hybrid_search.py Hybrid retrieval helpers
+│   ├── query_expansion.py Ollama query expansion
 │   └── query.py       Retrieve & generate
 ├── mcp/
 │   ├── server.py      MCP tool definitions
@@ -143,9 +148,11 @@ $ python main.py build-index
 ```
 User Question
   ↓
-Embed question
+Expand question with Ollama
   ↓
-Search FAISS → Top 5 chunks
+Search FAISS + BM25 in parallel
+  ↓
+Fuse ranked chunks with RRF → Top 5 contexts
   ↓
 LLM decides: Use MCP tools?
   ↓
@@ -173,6 +180,21 @@ CHUNK_OVERLAP = 100
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 OLLAMA_MODEL = "qwen3:0.6b"
 TOP_K = 5
+SEARCH_CANDIDATE_K = 10
+RRF_K = 60
+QUERY_EXPANSION_COUNT = 3
+QUERY_EXPANSION_TEMPERATURE = 0.0
+QUERY_EXPANSION_TIMEOUT_SECONDS = 30
+```
+
+BM25 is rebuilt in memory from `chunks.pkl` whenever the existing index/chunk cache is loaded or rebuilt; it is not persisted separately. The final answer always receives the original user question, not an expanded query.
+
+# 🧪 Unit Tests
+
+From `src/`:
+
+```bash
+python -m unittest discover -s tests
 ```
 
 # 🎬 Live Demo - Starting

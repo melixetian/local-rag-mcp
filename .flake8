@@ -1,0 +1,15 @@
+[flake8]
+exclude =
+    .venv/
+    __pycache__,
+    migrations
+
+color = always
+count = True
+indent-size = 4
+max-complexity = 20
+max-line-length = 120
+show_source = True
+
+docstring-convention=pep257
+ignore=D,E402,E203

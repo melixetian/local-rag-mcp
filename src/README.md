@@ -4,11 +4,13 @@ An intelligent Q&A system that answers questions about company documentation usi
 
 ## Features
 
-- **RAG-powered search**: Semantic search over company documentation using FAISS
+- **Hybrid RAG search**: Query expansion, parallel FAISS semantic search and BM25 full-text search, fused with RRF
 - **MCP tools**: Dynamic document reading and management
 - **Local LLM**: Privacy-preserving answers using Ollama
 
 ## Setup
+
+The dependency list includes `rank-bm25>=0.2.2` for the in-memory full-text retrieval branch.
 
 ### 1. Install Dependencies
 
@@ -30,6 +32,10 @@ mkdir docs
 Edit `config.py` to set:
 - `DOCUMENTS_DIR`: Path to your documentation directory
 - `OLLAMA_MODEL`: Local LLM model to use (default: "llama3")
+- `TOP_K`: Number of final chunks returned after fusion (default: `5`)
+- `SEARCH_CANDIDATE_K`: Candidates from each retrieval branch before fusion (default: `10`)
+- `RRF_K`: Reciprocal Rank Fusion constant (default: `60`)
+- `QUERY_EXPANSION_COUNT`, `QUERY_EXPANSION_TEMPERATURE`, and `QUERY_EXPANSION_TIMEOUT_SECONDS`
 - Other settings as needed
 
 ### 4. Build Index (Optional)
@@ -44,6 +50,14 @@ Or directly:
 
 ```bash
 python -m rag.build_index
+```
+
+Building or rebuilding the existing FAISS index also refreshes the in-memory BM25 index from `chunks.pkl`; BM25 has no separate on-disk artifact.
+
+### Run Unit Tests
+
+```bash
+python -m unittest discover -s tests
 ```
 
 ## Usage
@@ -84,8 +98,9 @@ src/
 2. **Chunking**: Splits documents into smaller chunks with overlap
 3. **Embedding**: Generates embeddings using SentenceTransformers
 4. **Indexing**: Builds FAISS vector index for fast similarity search
-5. **Query**: 
-   - Retrieves relevant chunks using semantic search
+5. **Query**:
+   - Expands the original question with Ollama (with a safe original-query fallback)
+   - Searches FAISS and BM25 in parallel, then fuses their ranked chunks with Reciprocal Rank Fusion
    - Optionally uses MCP tools for document access
    - Generates answer using local LLM (Ollama)
 

@@ -1,0 +1,28 @@
+You are helping answer a question using a knowledge base system with RAG (retrieval) and MCP tools.
+
+User question: $query
+
+$context_summary
+
+Available MCP tools:
+1. read_document(file_path: str) - Read a specific document file (use when you need full document content)
+2. list_documents() - List all available documents (use when user asks "what documents exist" or "list all docs")
+3. search_documents(query: str) - Search for documents by name (use when user asks to find a specific document)
+
+Decision rules:
+- If the retrieved chunks fully answer the question, set use_mcp to false
+- If chunks are empty or insufficient, consider using MCP tools
+- If user explicitly asks to read/list/search documents, use the appropriate tool
+- If you need the full content of a specific document mentioned in chunks, use read_document
+- When in doubt, prefer not using MCP (chunks are usually sufficient)
+
+Respond ONLY with valid JSON, no other text:
+{"use_mcp": true/false, "tool": "tool_name_or_null", "args": {"arg_name": "value"}}
+
+Examples:
+{"use_mcp": false, "tool": null, "args": {}}
+{"use_mcp": true, "tool": "read_document", "args": {"file_path": "docs/vacation-policy.md"}}
+{"use_mcp": true, "tool": "list_documents", "args": {}}
+{"use_mcp": true, "tool": "search_documents", "args": {"query": "vacation"}}
+
+Your JSON response:

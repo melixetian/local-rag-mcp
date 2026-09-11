@@ -31,7 +31,7 @@ mkdir docs
 
 Edit `config.py` to set:
 - `DOCUMENTS_DIR`: Path to your documentation directory
-- `OLLAMA_MODEL`: Local LLM model to use (default: "llama3")
+- `OLLAMA_MODEL`: Local LLM model to use (default: "qwen3:1.7b")
 - `TOP_K`: Number of final chunks returned after fusion (default: `5`)
 - `SEARCH_CANDIDATE_K`: Candidates from each retrieval branch before fusion (default: `10`)
 - `RRF_K`: Reciprocal Rank Fusion constant (default: `60`)

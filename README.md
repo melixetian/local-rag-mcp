@@ -178,7 +178,7 @@ Return answer + sources
 CHUNK_SIZE = 700
 CHUNK_OVERLAP = 100
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-OLLAMA_MODEL = "qwen3:0.6b"
+OLLAMA_MODEL = "qwen3:1.7b"
 TOP_K = 5
 SEARCH_CANDIDATE_K = 10
 RRF_K = 60
@@ -196,6 +196,18 @@ From `src/`:
 ```bash
 python -m unittest discover -s tests
 ```
+
+# 📚 Sample Knowledge Base and Evaluation
+
+The repository includes a fictional seven-document Northstar Labs knowledge base in `src/docs/`. It covers vacation, remote work, incident response, deployment, security, data-retention, and expense policies, including policy identifiers, commands, filenames, and paths that exercise both semantic and lexical retrieval.
+
+Manual evaluation questions live in [evaluation/rag-kb/TEST_CASES.md](evaluation/rag-kb/TEST_CASES.md). They include 13 answerable questions and two missing-information cases, with expected sources and facts. Rebuild the index after changing the knowledge base:
+
+```bash
+make build-index
+```
+
+The supporting corpus notes are in [evaluation/rag-kb/README.md](evaluation/rag-kb/README.md). Evaluation files remain outside `src/docs/`, so they are not indexed as answer context.
 
 # 🎬 Live Demo - Starting
 

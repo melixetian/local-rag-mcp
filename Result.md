@@ -1,3 +1,7 @@
+# RAG Evaluation Result
+
+````text
+$ make run
 cd src && python main.py
 ============================================================
 🤖 Company Knowledge Base Assistant
@@ -99,3 +103,4 @@ This command declares the incident, triggering the required response procedures 
 ❓ Question: q
 
 👋 Goodbye!
+````
